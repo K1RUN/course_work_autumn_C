@@ -46,24 +46,36 @@ void del_digit(char **sentence){ //удаляет цифры из
     }
 }
 
-int is_palindrome(char* str){
-    //TODO: При проверке на палиндром учитывать разделители не нужны, то есть строка “abcd eedcba” является палиндромом.
-    char *ptr_start = str; /*Указатель на начало строки*/
-    char *ptr_end = strchr(str, '\0') - 1;/*Присвоить указатель на конец строки*/
-    while(ptr_start <= ptr_end){
-        if(*ptr_start != *ptr_end){
-            return 0;
+int is_palindrome(char **sentence){
+    //TODO: При проверке на палиндром учитывать разделители не нужны, то есть строка “abcd eedcba” является палиндромом
+    if (sentence) {
+        for (int i = 0; i < strlen(*sentence); i++) {
+            if (isspace((*sentence)[i]) || (*sentence)[i] == ',') {
+                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i) + 1); //что делать, реализация модификации исходного текста
+                i--;
+            }
         }
-        ptr_start++; ptr_end--;
+        char *ptr_start = *sentence; /*Указатель на начало строки*/
+        char *ptr_end = strchr(*sentence, '.') - 1;/*Присвоить указатель на конец предложения, НЕ учитывая точку*/
+        puts(*sentence);
+        while (ptr_start <= ptr_end) {
+            if (*ptr_start != *ptr_end) {
+                return 0;
+            }
+            ptr_start++;
+            ptr_end--;
+        }
+        return 1;
     }
-    return 1;
+    return -1;
 }
 
 int main(){
     char *sentence;
     scan_sentence(&sentence);
     puts(sentence);
-    del_digit(&sentence);
-    puts(sentence);
-    printf("%d", is_palindrome(sentence));
+//    sentence = NULL;
+//    del_digit(&sentence);
+//    puts(sentence);
+    printf("%d", is_palindrome(&sentence));
 }
