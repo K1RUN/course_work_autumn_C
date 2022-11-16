@@ -35,7 +35,7 @@ void scan_txt(char ***txt){ //TODO
     *txt = malloc(len * sizeof(char*));
 };
 
-void del_digit(char **sentence){ //удаляет цифры из
+void del_digit(char **sentence){ //удаляет цифры из предложения
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
             if (isdigit((*sentence)[i])) {
@@ -47,7 +47,6 @@ void del_digit(char **sentence){ //удаляет цифры из
 }
 
 int is_palindrome(char **sentence){
-    //TODO: При проверке на палиндром учитывать разделители не нужны, то есть строка “abcd eedcba” является палиндромом
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
             if (isspace((*sentence)[i]) || (*sentence)[i] == ',') {
@@ -74,8 +73,7 @@ int main(){
     char *sentence;
     scan_sentence(&sentence);
     puts(sentence);
-//    sentence = NULL;
-//    del_digit(&sentence);
-//    puts(sentence);
+    del_digit(&sentence);
+    puts(sentence);
     printf("%d", is_palindrome(&sentence));
 }
