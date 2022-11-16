@@ -39,7 +39,7 @@ void del_digit(char **sentence){ //удаляет цифры из предлож
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
             if (isdigit((*sentence)[i])) {
-                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i) + 1);
+                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i));
                 i--;
             }
         }
@@ -50,13 +50,12 @@ int is_palindrome(char **sentence){
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
             if (isspace((*sentence)[i]) || (*sentence)[i] == ',') {
-                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i) + 1); //что делать, реализация модификации исходного текста
+                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i));
                 i--;
             }
         }
         char *ptr_start = *sentence; /*Указатель на начало строки*/
         char *ptr_end = strchr(*sentence, '.') - 1;/*Присвоить указатель на конец предложения, НЕ учитывая точку*/
-        puts(*sentence);
         while (ptr_start <= ptr_end) {
             if (*ptr_start != *ptr_end) {
                 return 0;
