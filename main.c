@@ -30,7 +30,7 @@ int scan_sentence(char **str){
         }
     } while(c != '.' && count != 2);
     (*str)[n] = '\0';
-    if(count == 2){
+    if(count == 2){ //дважды встретили \n - конец текста
         return 1; // ввод закончился
     }
     return 0;
@@ -64,6 +64,36 @@ int scan_txt(char ***txt){ //TODO
     return n;
 }
 
+int check_txt(char ***txt, int n){
+    if(txt){
+        int flag = 1;
+        int new_n = n; //новое число предложений
+        for (int i = 0; i < new_n; i++){
+            for (int j = i + 1; j < new_n; j++){ // проверяем i-ое предложение с j-ым
+//                printf("%lu %lu\n", strlen(*(*txt + i)), strlen(*(*txt + j)));
+                if (strlen(*(*txt + i)) != strlen(*(*txt + j))){
+                    continue;
+                } else {
+                    for (int k = 0; k < strlen(*(*txt + i)); k++){ // посимвольно проверяем два предложения
+                        printf("%c %c ", *(*(*txt + i) + k), *(*(*txt + j) + k));
+                        if(*(*(*txt + i) + k) != *(*(*txt + j) + k)){
+                            flag = 0;
+                        }
+                    }
+                    if (flag == 1) {
+                        memmove(*(*txt + j), *(*txt + j + 1), new_n - j); //TODO: fix bug
+                        (*txt)[new_n] = NULL;
+                        new_n--;
+                    }
+                    flag = 1;
+                }
+            }
+        }
+        return new_n;
+    }
+    return -1;
+}
+
 void del_digit(char **sentence){ //удаляет цифры из предложения TODO: сделать применение функции ко всему тексту
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
@@ -84,7 +114,7 @@ int is_palindrome(char **sentence){ //TODO: сделать прменение ф
             }
         }
         char *ptr_start = *sentence; /*Указатель на начало строки*/
-        char *ptr_end = strchr(*sentence, '.') - 1;/*Присвоить указатель на конец предложения, НЕ учитывая точку*/
+        char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
         while (ptr_start <= ptr_end) {
             if (*ptr_start != *ptr_end) {
                 return 0;
@@ -106,6 +136,10 @@ int main(){
 //    printf("%d", is_palindrome(&sentence));
     char **text;
     int n = scan_txt(&text);
+    for(int i = 0; i <= n; i++){
+        printf("%s", text[i]);
+    }
+    check_txt(&text, n);
     for(int i = 0; i <= n; i++){
         printf("%s", text[i]);
     }
