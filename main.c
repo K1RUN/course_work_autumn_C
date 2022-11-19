@@ -64,6 +64,17 @@ int scan_txt(char ***txt){ //TODO
     return n;
 }
 
+void del_null_pointers(char ***txt, int n){
+    if(txt){
+        for (int i = 0; i < n; i++){
+            if ((*txt)[i] == NULL){
+                memmove((*txt + i), (*txt + i + 1), (n - i) * sizeof(char *));
+                i--;
+            }
+        }
+    }
+}
+
 int check_txt(char ***txt, int n){
     if(txt){
         int flag = 1;
@@ -82,9 +93,7 @@ int check_txt(char ***txt, int n){
                         }
                         if (flag == 1) {
                             free(*(*txt + j));
-//                            free(*(*txt + i));
                             *(*txt + j) = NULL; //???? прокатит ли? TODO?
-//                            *(*txt + i) = NULL;
                             new_n--;
                         }
                         flag = 1;
@@ -92,6 +101,7 @@ int check_txt(char ***txt, int n){
                 }
             }
         }
+        del_null_pointers(txt, n);
         return new_n;
     }
     return -1;
@@ -142,7 +152,7 @@ int main(){
 //    for(int i = 0; i < n; i++){
 //        printf("%s", text[i]);
 //    }
-    check_txt(&text, n);
+    n = check_txt(&text, n);
     for(int i = 0; i < n; i++){
         printf("%s", text[i]);
     }
