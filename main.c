@@ -31,7 +31,7 @@ int scan_sentence(char **str){
     } while(c != '.' && count != 2);
     (*str)[n] = '\0';
     if(count == 2){ //дважды встретили \n - конец текста
-        return 1; // ввод закончился
+        return 1; //ввод закончился
     }
     return 0;
 }
@@ -67,25 +67,28 @@ int scan_txt(char ***txt){ //TODO
 int check_txt(char ***txt, int n){
     if(txt){
         int flag = 1;
-        int new_n = n; //новое число предложений
-        for (int i = 0; i < new_n; i++){
-            for (int j = i + 1; j < new_n; j++){ // проверяем i-ое предложение с j-ым
-//                printf("%lu %lu\n", strlen(*(*txt + i)), strlen(*(*txt + j)));
-                if (strlen(*(*txt + i)) != strlen(*(*txt + j))){
-                    continue;
-                } else {
-                    for (int k = 0; k < strlen(*(*txt + i)); k++){ // посимвольно проверяем два предложения
-                        printf("%c %c ", *(*(*txt + i) + k), *(*(*txt + j) + k));
-                        if(*(*(*txt + i) + k) != *(*(*txt + j) + k)){
-                            flag = 0;
+        int new_n = n; // новое число предложений
+        for (int i = 0; i < n; i++){
+            for (int j = i + 1; j < n; j++){ // проверяем i-ое предложение с j-ым
+//                printf("%s %s\n", *(*txt + i), *(*txt + j));
+                if(*(*txt + i) != NULL && *(*txt + j) != NULL) {
+                    if (strlen(*(*txt + i)) != strlen(*(*txt + j))) {
+                        continue;
+                    } else {
+                        for (int k = 0; k < strlen(*(*txt + i)); k++) { // посимвольно проверяем два предложения
+                            if (tolower(*(*(*txt + i) + k)) != tolower(*(*(*txt + j) + k))) {
+                                flag = 0;
+                            }
                         }
+                        if (flag == 1) {
+                            free(*(*txt + j));
+//                            free(*(*txt + i));
+                            *(*txt + j) = NULL; //???? прокатит ли? TODO?
+//                            *(*txt + i) = NULL;
+                            new_n--;
+                        }
+                        flag = 1;
                     }
-                    if (flag == 1) {
-                        memmove(*(*txt + j), *(*txt + j + 1), new_n - j); //TODO: fix bug
-                        (*txt)[new_n] = NULL;
-                        new_n--;
-                    }
-                    flag = 1;
                 }
             }
         }
@@ -136,12 +139,12 @@ int main(){
 //    printf("%d", is_palindrome(&sentence));
     char **text;
     int n = scan_txt(&text);
-    for(int i = 0; i <= n; i++){
-        printf("%s", text[i]);
-    }
+//    for(int i = 0; i < n; i++){
+//        printf("%s", text[i]);
+//    }
     check_txt(&text, n);
-    for(int i = 0; i <= n; i++){
+    for(int i = 0; i < n; i++){
         printf("%s", text[i]);
     }
-    printf("%d ", n);
+//    printf("%d ", n);
 }
