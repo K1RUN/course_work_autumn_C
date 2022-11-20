@@ -81,7 +81,6 @@ int check_txt(char ***txt, int n){
         int new_n = n; // новое число предложений
         for (int i = 0; i < n; i++){
             for (int j = i + 1; j < n; j++){ // проверяем i-ое предложение с j-ым
-//                printf("%s %s\n", *(*txt + i), *(*txt + j));
                 if(*(*txt + i) != NULL && *(*txt + j) != NULL) {
                     if (strlen(*(*txt + i)) != strlen(*(*txt + j))) {
                         continue;
@@ -107,7 +106,7 @@ int check_txt(char ***txt, int n){
     return -1;
 }
 
-void del_digit(char **sentence){ //удаляет цифры из предложения TODO: сделать применение функции ко всему тексту
+void del_digits(char **sentence){ //удаляет цифры из предложения TODO: сделать применение функции ко всему тексту
     if (sentence) {
         for (int i = 0; i < strlen(*sentence); i++) {
             if (isdigit((*sentence)[i])) {
@@ -140,6 +139,35 @@ int is_palindrome(char **sentence){ //TODO: сделать прменение ф
     return -1;
 }
 
+void what_to_do(char ***txt, int n){
+    int a = 0;
+    printf("What to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
+           "3 - delete sentences, where the first char is equal to the last.\n"
+           "4 - sort sentences by the length of the third word.\n");
+    scanf("%d", &a);
+    switch (a){
+        case 1: {
+            for(int i = 0; i < n; i++){
+                del_digits(*txt + i);
+            }
+            break;
+        }
+        case 2: {
+            for(int i = 0; i < n; i++){
+                if(is_palindrome(*txt + i)){
+                    printf("Palindrome\n");
+                }else{
+                    printf("Nothing interesting\n");
+                }
+            }
+            break;
+        }
+//        case 3: { //TODO
+//
+//        }
+    }
+}
+
 int main(){
 //    char *sentence;
 //    scan_sentence(&sentence);
@@ -149,10 +177,11 @@ int main(){
 //    printf("%d", is_palindrome(&sentence));
     char **text;
     int n = scan_txt(&text);
-//    for(int i = 0; i < n; i++){
-//        printf("%s", text[i]);
-//    }
+    for(int i = 0; i < n; i++){
+        printf("%s", text[i]);
+    }
     n = check_txt(&text, n);
+    what_to_do(&text, n);
     for(int i = 0; i < n; i++){
         printf("%s", text[i]);
     }
