@@ -90,7 +90,7 @@ int check_txt(char ***txt, int n){
                                 flag = 0;
                             }
                         }
-                        if (flag == 1) {
+                        if (flag) {
                             free(*(*txt + j));
                             *(*txt + j) = NULL; //???? прокатит ли? TODO?
                             new_n--;
@@ -99,6 +99,29 @@ int check_txt(char ***txt, int n){
                     }
                 }
             }
+        }
+        del_null_pointers(txt, n);
+        return new_n;
+    }
+    return -1;
+}
+
+int delete_equal_char(char ***txt, int n){
+    if(txt){
+        int flag = 1;
+        int new_n = n; // новое число предложений
+        for (int i = 0; i < n; i++){
+            printf("%c ", tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 1)));
+            printf("%c ", tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2)));
+            if (tolower(*(*(*txt + i))) != tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2))) {
+                flag = 0;
+            }
+            if (flag) {
+                free(*(*txt + i));
+                *(*txt + i) = NULL; //???? прокатит ли? TODO?
+                new_n--;
+            }
+            flag = 1;
         }
         del_null_pointers(txt, n);
         return new_n;
@@ -118,16 +141,17 @@ void del_digits(char **sentence){ //удаляет цифры из предло�
 }
 
 int is_palindrome(char **sentence){ //TODO: сделать прменение функции ко всему тексту
-    if (sentence) {
-        for (int i = 0; i < strlen(*sentence); i++) {
-            if (isspace((*sentence)[i]) || (*sentence)[i] == ',') {
-                memmove(*sentence + i, *sentence + i + 1, strlen(*sentence + i));
-                i--;
-            }
-        }
+    if (sentence) { //TODO: fix нельзя модифицировать текст
         char *ptr_start = *sentence; /*Указатель на начало строки*/
         char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
         while (ptr_start <= ptr_end) {
+            while (*ptr_start == ' ' || *ptr_end == ' ') {
+                if (*ptr_start == ' ') {
+                    ptr_start++;
+                } else if (*ptr_end == ' ') {
+                    ptr_end--;
+                }
+            }
             if (*ptr_start != *ptr_end) {
                 return 0;
             }
@@ -141,49 +165,42 @@ int is_palindrome(char **sentence){ //TODO: сделать прменение ф
 
 void what_to_do(char ***txt, int n){
     int a = 0;
+    int running = 1;
     printf("What to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
            "3 - delete sentences, where the first char is equal to the last.\n"
-           "4 - sort sentences by the length of the third word.\n");
+           "4 - sort sentences by the length of the third word.\n5 - exit.\n");
     scanf("%d", &a);
-    switch (a){
-        case 1: {
-            for(int i = 0; i < n; i++){
-                del_digits(*txt + i);
-            }
-            break;
-        }
-        case 2: {
-            for(int i = 0; i < n; i++){
-                if(is_palindrome(*txt + i)){
-                    printf("Palindrome\n");
-                }else{
-                    printf("Nothing interesting\n");
+//    while(running) {
+        switch (a) {
+            case 1: {
+                for (int i = 0; i < n; i++) {
+                    del_digits(*txt + i);
                 }
+                break;
             }
-            break;
-        }
-//        case 3: { //TODO
-//
+            case 2: {
+                for (int i = 0; i < n; i++) {
+                    if (is_palindrome(*txt + i)) {
+                        printf("Palindrome\n");
+                    } else {
+                        printf("Nothing interesting\n");
+                    }
+                }
+                break;
+            }
+            case 3: {
+                delete_equal_char(txt, n);
+            }
 //        }
     }
 }
 
 int main(){
-//    char *sentence;
-//    scan_sentence(&sentence);
-//    puts(sentence);
-//    del_digit(&sentence);
-//    puts(sentence);
-//    printf("%d", is_palindrome(&sentence));
     char **text;
     int n = scan_txt(&text);
-    for(int i = 0; i < n; i++){
-        printf("%s", text[i]);
-    }
     n = check_txt(&text, n);
-    what_to_do(&text, n);
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i <= n; i++){ //bug не обновляем n
         printf("%s", text[i]);
     }
-//    printf("%d ", n);
+    what_to_do(&text, n);
 }
