@@ -168,10 +168,10 @@ int is_palindrome(char **sentence){
         char *ptr_start = *sentence; /*Указатель на начало строки*/
         char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
         while (ptr_start <= ptr_end) {
-            while (*ptr_start == ' ' || *ptr_end == ' ') { //TODO: запятую тоже учитывать не надо
-                if (*ptr_start == ' ') {
+            while (*ptr_start == ' ' || *ptr_start == ',' || *ptr_end == ' ' || *ptr_end == ',') {
+                if (*ptr_start == ' ' || *ptr_start == ',') {
                     ptr_start++;
-                } else if (*ptr_end == ' ') {
+                } else if (*ptr_end == ' ' || *ptr_end == ',') {
                     ptr_end--;
                 }
             }
@@ -184,6 +184,12 @@ int is_palindrome(char **sentence){
         return 1;
     }
     return -1;
+}
+
+void print_out(char ***txt, int n){
+    for(int i = 0; i < n; i++){
+        printf("%s", (*txt)[i]);
+    }
 }
 
 int what_to_do(char ***txt, int n){
@@ -204,9 +210,9 @@ int what_to_do(char ***txt, int n){
             case 2: {
                 for (int i = 0; i < num; i++) {
                     if (is_palindrome(*txt + i)) {
-                        printf("Palindrome\n");
+                        printf("%d Palindrome\n", i);
                     } else {
-                        printf("Nothing interesting\n");
+                        printf("%d Nothing interesting\n", i);
                     }
                 }
                 break;
@@ -226,9 +232,7 @@ int what_to_do(char ***txt, int n){
                 printf("Got wrong instruction. Please, try again.\n");
             }
         }
-        for(int i = 0; i < num; i++){ //bug не обновляем n
-            printf("%s", (*txt)[i]);
-        }
+        print_out(txt, num);
     }
 }
 
