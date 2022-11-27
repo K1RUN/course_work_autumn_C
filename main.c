@@ -218,11 +218,11 @@ int what_to_do(char ***txt, int n){
                 break;
             }
             case 3: {
-                num = delete_equal_char(txt, n);
+                num = delete_equal_char(txt, num);
                 break;
             }
             case 4: {
-                qsort(*txt, n, sizeof(char *), cmp);
+                qsort(*txt, num, sizeof(char *), cmp);
                 break;
             }
             case 5: {
