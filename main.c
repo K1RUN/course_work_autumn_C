@@ -241,5 +241,5 @@ int main(){
     int n = scan_txt(&text);
     n = check_txt(&text, n);
     n = what_to_do(&text, n);
-    free_txt(text, n);
+    free_txt(text, n + 1);
 }
