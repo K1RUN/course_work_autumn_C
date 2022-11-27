@@ -226,7 +226,7 @@ int what_to_do(char ***txt, int n){
                 break;
             }
             case 5: {
-                return 0;
+                return num;
             }
             default: {
                 printf("Got wrong instruction. Please, try again.\n");
@@ -240,5 +240,6 @@ int main(){
     char **text;
     int n = scan_txt(&text);
     n = check_txt(&text, n);
-    what_to_do(&text, n);
+    n = what_to_do(&text, n);
+    free_txt(text, n);
 }
