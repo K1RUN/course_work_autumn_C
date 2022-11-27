@@ -43,7 +43,7 @@ void free_txt(char **txt, int n){
     free(txt);
 }
 
-int scan_txt(char ***txt){ //TODO
+int scan_txt(char ***txt){
     int len = BUF;
     int n = 0;
     *txt = malloc(len * sizeof(char*));
