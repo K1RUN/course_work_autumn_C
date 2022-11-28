@@ -81,22 +81,16 @@ int check_txt(char ***txt, int n){
         int new_n = n; // новое число предложений
         for (int i = 0; i < n; i++){
             for (int j = i + 1; j < n; j++){ // проверяем i-ое предложение с j-ым
-                if(*(*txt + i) != NULL && *(*txt + j) != NULL) {
-                    if (strlen(*(*txt + i)) != strlen(*(*txt + j))) {
-                        continue;
-                    } else {
-                        for (int k = 0; k < strlen(*(*txt + i)); k++) { // посимвольно проверяем два предложения
-                            if (tolower(*(*(*txt + i) + k)) != tolower(*(*(*txt + j) + k))) {
-                                flag = 0;
-                            }
-                        }
-                        if (flag) {
-                            free(*(*txt + j));
-                            *(*txt + j) = NULL;
-                            new_n--;
-                        }
-                        flag = 1;
+                if (*(*txt + i) != NULL && *(*txt + j) != NULL) {
+                    if (strcasecmp(*(*txt + i), *(*txt + j)) != 0) {
+                        flag = 0;
                     }
+                    if (flag) {
+                        free(*(*txt + j));
+                        *(*txt + j) = NULL;
+                        new_n--;
+                    }
+                    flag = 1;
                 }
             }
         }
@@ -193,21 +187,21 @@ void print_out(char ***txt, int n){
 }
 
 int what_to_do(char ***txt, int n){
-    int a = 0;
+    char a = 0;
     int num = n;
     while(1) {
         printf("\nWhat to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
                "3 - delete sentences, where the first char is equal to the last.\n"
                "4 - sort sentences by the length of the third word.\n5 - exit.\n");
-        scanf("%d", &a);
+        a = (char)getchar();
         switch(a) {
-            case 1: {
+            case '1': {
                 for (int i = 0; i < num; i++) {
                     del_digits(*txt + i);
                 }
                 break;
             }
-            case 2: {
+            case '2': {
                 for (int i = 0; i < num; i++) {
                     if (is_palindrome(*txt + i)) {
                         printf("%d Palindrome\n", i);
@@ -217,15 +211,15 @@ int what_to_do(char ***txt, int n){
                 }
                 break;
             }
-            case 3: {
+            case '3': {
                 num = delete_equal_char(txt, num);
                 break;
             }
-            case 4: {
+            case '4': {
                 qsort(*txt, num, sizeof(char *), cmp);
                 break;
             }
-            case 5: {
+            case '5': {
                 return num;
             }
             default: {
