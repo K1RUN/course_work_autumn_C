@@ -187,12 +187,12 @@ void print_out(char ***txt, int n){
 }
 
 int what_to_do(char ***txt, int n){
-    int a = 0;
     int num = n;
     while(1) {
         printf("\nWhat to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
                "3 - delete sentences, where the first char is equal to the last.\n"
                "4 - sort sentences by the length of the third word.\n5 - exit.\n");
+        int a = 0;
         scanf("%d", &a);
         switch(a) {
             case 1: {
@@ -226,7 +226,12 @@ int what_to_do(char ***txt, int n){
                 printf("Got wrong instruction. Please, try again.\n");
             }
         }
-        print_out(txt, num);
+        if(num == 0){
+            printf("Text consists of 0 sentences now. Terminating...\n");
+            return num;
+        } else {
+            print_out(txt, num);
+        }
     }
 }
 
