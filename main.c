@@ -187,21 +187,21 @@ void print_out(char ***txt, int n){
 }
 
 int what_to_do(char ***txt, int n){
-    char a = 0;
+    int a = 0;
     int num = n;
     while(1) {
         printf("\nWhat to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
                "3 - delete sentences, where the first char is equal to the last.\n"
                "4 - sort sentences by the length of the third word.\n5 - exit.\n");
-        a = (char)getchar();
+        scanf("%d", &a);
         switch(a) {
-            case '1': {
+            case 1: {
                 for (int i = 0; i < num; i++) {
                     del_digits(*txt + i);
                 }
                 break;
             }
-            case '2': {
+            case 2: {
                 for (int i = 0; i < num; i++) {
                     if (is_palindrome(*txt + i)) {
                         printf("%d Palindrome\n", i);
@@ -211,15 +211,15 @@ int what_to_do(char ***txt, int n){
                 }
                 break;
             }
-            case '3': {
+            case 3: {
                 num = delete_equal_char(txt, num);
                 break;
             }
-            case '4': {
+            case 4: {
                 qsort(*txt, num, sizeof(char *), cmp);
                 break;
             }
-            case '5': {
+            case 5: {
                 return num;
             }
             default: {
