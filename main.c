@@ -105,7 +105,8 @@ int delete_equal_char(char ***txt, int n){
         int flag = 1;
         int new_n = n; // новое число предложений
         for (int i = 0; i < n; i++){
-            if (tolower(*(*(*txt + i))) != tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2))) {
+            if ((strlen((*(*txt + i)))) > 1
+                && tolower(*(*(*txt + i))) != tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2))) {
                 flag = 0;
             }
             if (flag) {
@@ -162,7 +163,7 @@ int is_palindrome(char **sentence){
         char *ptr_start = *sentence; /*Указатель на начало строки*/
         char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
         while (ptr_start <= ptr_end) {
-            while (*ptr_start == ' ' || *ptr_start == ',' || *ptr_end == ' ' || *ptr_end == ',') {
+            while (*ptr_start == ' ' || *ptr_start == ',' || *ptr_end == ' ' || *ptr_end == ',') { //TODO: FIX ME
                 if (*ptr_start == ' ' || *ptr_start == ',') {
                     ptr_start++;
                 } else if (*ptr_end == ' ' || *ptr_end == ',') {
@@ -192,34 +193,40 @@ int what_to_do(char ***txt, int n){
         printf("\nWhat to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
                "3 - delete sentences, where the first char is equal to the last.\n"
                "4 - sort sentences by the length of the third word.\n5 - exit.\n");
-        int a = 0;
-        scanf("%d", &a);
+        char a = (char)getchar();
+        while(a == '\n'){
+            a = (char)getchar();
+        }
         switch(a) {
-            case 1: {
+            case '1': {
                 for (int i = 0; i < num; i++) {
                     del_digits(*txt + i);
                 }
+                print_out(txt, num);
                 break;
             }
-            case 2: {
+            case '2': {
                 for (int i = 0; i < num; i++) {
                     if (is_palindrome(*txt + i)) {
-                        printf("%d Palindrome\n", i);
+                        printf("%d Palindrome\n", i + 1);
                     } else {
-                        printf("%d Nothing interesting\n", i);
+                        printf("%d Nothing interesting\n", i + 1);
                     }
                 }
+                print_out(txt, num);
                 break;
             }
-            case 3: {
+            case '3': {
                 num = delete_equal_char(txt, num);
+                print_out(txt, num);
                 break;
             }
-            case 4: {
+            case '4': {
                 qsort(*txt, num, sizeof(char *), cmp);
+                print_out(txt, num);
                 break;
             }
-            case 5: {
+            case '5': {
                 return num;
             }
             default: {
@@ -229,8 +236,6 @@ int what_to_do(char ***txt, int n){
         if(num == 0){
             printf("Text consists of 0 sentences now. Terminating...\n");
             return num;
-        } else {
-            print_out(txt, num);
         }
     }
 }
