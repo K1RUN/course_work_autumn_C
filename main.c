@@ -162,19 +162,22 @@ int is_palindrome(char **sentence){
     if (sentence) {
         char *ptr_start = *sentence; /*Указатель на начало строки*/
         char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
-        while (ptr_start <= ptr_end) {
-            while (*ptr_start == ' ' || *ptr_start == ',' || *ptr_end == ' ' || *ptr_end == ',') { //TODO: FIX ME
-                if (*ptr_start == ' ' || *ptr_start == ',') {
-                    ptr_start++;
-                } else if (*ptr_end == ' ' || *ptr_end == ',') {
-                    ptr_end--;
+        char *cpy_ptr_start = *sentence;
+        char *cpy_ptr_end = strchr(*sentence, '.') - 1;
+        while (cpy_ptr_start <= cpy_ptr_end) {
+            while ((cpy_ptr_start != ptr_end && cpy_ptr_end != ptr_start) &&
+                    (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',' || *cpy_ptr_end == ' ' || *cpy_ptr_end == ',')){
+                if (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',') {
+                    cpy_ptr_start++;
+                } else if (*cpy_ptr_end == ' ' || *cpy_ptr_end == ',') {
+                    cpy_ptr_end--;
                 }
             }
-            if (*ptr_start != *ptr_end) {
+            if (*cpy_ptr_start != *cpy_ptr_end) {
                 return 0;
             }
-            ptr_start++;
-            ptr_end--;
+            cpy_ptr_start++;
+            cpy_ptr_end--;
         }
         return 1;
     }
