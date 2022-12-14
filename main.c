@@ -15,6 +15,8 @@ int scan_sentence(char **str){
         (*str)[n] = c;
         if (c == '\n'){
             count++;
+        } else {
+            count = 0;
         }
         n++;
         if (n == len - 1){
@@ -48,8 +50,8 @@ int scan_txt(char ***txt){
     int n = 0;
     *txt = malloc(len * sizeof(char*));
     while(!scan_sentence(*txt + n)){
-        if (n == len){
-            char **tmp = realloc(*txt, len + BUF);
+        if (n == len - 1){
+            char **tmp = realloc(*txt, sizeof(char*) * (len + BUF));
             if(tmp){
                 *txt = tmp;
                 len += BUF;
@@ -100,26 +102,78 @@ int check_txt(char ***txt, int n){
     return -1;
 }
 
-int delete_equal_char(char ***txt, int n){
+int del_equal_char(char ***txt, int n){
     if(txt){
         int flag = 1;
         int new_n = n; // новое число предложений
-        for (int i = 0; i < n; i++){
-            if ((strlen((*(*txt + i)))) > 1
-                && tolower(*(*(*txt + i))) != tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2))) {
-                flag = 0;
+        for (int i = 0; i < n; i++) {
+            if ((strlen(*(*txt + i))) > 1) {
+                if (tolower(*(*(*txt + i))) != tolower(*(*(*txt + i) + strlen((*(*txt + i))) - 2))) {
+                    flag = 0;
+                }
+                if (flag) {
+                    free(*(*txt + i));
+                    *(*txt + i) = NULL;
+                    new_n--;
+                }
+                flag = 1;
             }
-            if (flag) {
-                free(*(*txt + i));
-                *(*txt + i) = NULL;
-                new_n--;
-            }
-            flag = 1;
         }
         del_null_pointers(txt, n);
         return new_n;
     }
     return -1;
+}
+
+void del_equal_words(char **sentence){
+    if (sentence) {
+        int flag = 0;
+        char *token;
+        char *copy = (char *) malloc(strlen(*sentence) + 1);
+        strcpy(copy, *sentence);
+        token = strtok(copy, " ,");
+        while (token != NULL) {
+            for (int i = 0; i < strlen(*sentence); i++) {
+                if ((*sentence)[i] == ' ' || (*sentence)[i] == ',') {
+                    continue;
+                } else if (!strncmp(*sentence + i, token, strlen(token)) &&
+                        ((i != 0 &&
+                          (((*sentence)[i - 1] == ' ' ||
+                            (*sentence)[i - 1] == '.'
+                            || (*sentence)[i - 1] == ',')
+                           && ((*sentence)[i + (int)strlen(token)] == ' '
+                               || (*sentence)[i + (int)strlen(token)] == '.'
+                               || (*sentence)[i + (int)strlen(token)] == ','))) || (i == 0 &&
+                               ((*sentence)[i + (int)strlen(token)] == ' '
+                               || (*sentence)[i + (int)strlen(token)] == '.'
+                               || (*sentence)[i + (int)strlen(token)] == ',')))
+                    ) {
+                    flag += 1;
+                }
+            }
+            for (int i = 0; i < strlen(*sentence); i++) {
+                if ((*sentence)[i] == ' ' || (*sentence)[i] == ',') {
+                    continue;
+                } else if (!strncmp(*sentence + i, token, strlen(token)) &&
+                        ((i != 0 &&
+                        (((*sentence)[i - 1] == ' ' ||
+                        (*sentence)[i - 1] == '.'
+                        || (*sentence)[i - 1] == ',')
+                        && ((*sentence)[i + (int)strlen(token)] == ' '
+                        || (*sentence)[i + (int)strlen(token)] == '.'
+                        || (*sentence)[i + (int)strlen(token)] == ','))) || (i == 0 &&
+                        ((*sentence)[i + (int)strlen(token)] == ' '
+                        || (*sentence)[i + (int)strlen(token)] == '.'
+                        || (*sentence)[i + (int)strlen(token)] == ','))) && flag > 1) {
+                    memmove(*sentence + i, *sentence + i + strlen(token), strlen(*sentence + i + strlen(token)));
+                }
+            }
+            token = strtok(NULL, " ,");
+            flag = 0;
+            *(strchr(*sentence, '.') + 1) = '\0';
+        }
+        free(copy);
+    }
 }
 
 void del_digits(char **sentence){
@@ -160,24 +214,26 @@ int cmp(const void *a, const void *b){
 
 int is_palindrome(char **sentence){
     if (sentence) {
-        char *ptr_start = *sentence; /*Указатель на начало строки*/
-        char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
-        char *cpy_ptr_start = *sentence;
-        char *cpy_ptr_end = strchr(*sentence, '.') - 1;
-        while (cpy_ptr_start <= cpy_ptr_end) {
-            while ((cpy_ptr_start != ptr_end && cpy_ptr_end != ptr_start) &&
-                    (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',' || *cpy_ptr_end == ' ' || *cpy_ptr_end == ',')){
-                if (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',') {
-                    cpy_ptr_start++;
-                } else if (*cpy_ptr_end == ' ' || *cpy_ptr_end == ',') {
-                    cpy_ptr_end--;
+        if(strlen(*sentence) > 1) {
+            char *ptr_start = *sentence; /*Указатель на начало строки*/
+            char *ptr_end = strchr(*sentence, '.') - 1; /*Присвоить указатель на конец предложения, НЕ учитывая точку*/
+            char *cpy_ptr_start = *sentence;
+            char *cpy_ptr_end = strchr(*sentence, '.') - 1;
+            while (cpy_ptr_start <= cpy_ptr_end) {
+                while ((cpy_ptr_start != ptr_end && cpy_ptr_end != ptr_start) &&
+                       (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',' || *cpy_ptr_end == ' ' || *cpy_ptr_end == ',')) {
+                    if (*cpy_ptr_start == ' ' || *cpy_ptr_start == ',') {
+                        cpy_ptr_start++;
+                    } else if (*cpy_ptr_end == ' ' || *cpy_ptr_end == ',') {
+                        cpy_ptr_end--;
+                    }
                 }
+                if (*cpy_ptr_start != *cpy_ptr_end) {
+                    return 0;
+                }
+                cpy_ptr_start++;
+                cpy_ptr_end--;
             }
-            if (*cpy_ptr_start != *cpy_ptr_end) {
-                return 0;
-            }
-            cpy_ptr_start++;
-            cpy_ptr_end--;
         }
         return 1;
     }
@@ -190,12 +246,17 @@ void print_out(char ***txt, int n){
     }
 }
 
-int what_to_do(char ***txt, int n){
+int what_to_do(char ***txt, int n)  {
     int num = n;
     while(1) {
+        if(num == 0){
+            printf("Text consists of 0 sentences now. Terminating...\n");
+            return num;
+        }
         printf("\nWhat to do?\n1 - delete digits in every sentence.\n2 - find palindromes in text.\n"
                "3 - delete sentences, where the first char is equal to the last.\n"
-               "4 - sort sentences by the length of the third word.\n5 - exit.\n");
+               "4 - sort sentences by the length of the third word.\n5 - delete all words, which occur more than once.\n"
+               "6 - exit.\n");
         char a = (char)getchar();
         while(a == '\n'){
             a = (char)getchar();
@@ -220,7 +281,7 @@ int what_to_do(char ***txt, int n){
                 break;
             }
             case '3': {
-                num = delete_equal_char(txt, num);
+                num = del_equal_char(txt, num);
                 print_out(txt, num);
                 break;
             }
@@ -230,15 +291,18 @@ int what_to_do(char ***txt, int n){
                 break;
             }
             case '5': {
+                for (int i = 0; i < num; i++) {
+                    del_equal_words(*txt + i);
+                }
+                print_out(txt, num);
+                break;
+            }
+            case '6': {
                 return num;
             }
             default: {
                 printf("Got wrong instruction. Please, try again.\n");
             }
-        }
-        if(num == 0){
-            printf("Text consists of 0 sentences now. Terminating...\n");
-            return num;
         }
     }
 }
